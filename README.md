@@ -1,7 +1,8 @@
-# Tauri + Svelte + Typescript
+# Tauri (Rust + Svelte)
 
-This template should help get you started developing with Tauri, Svelte and TypeScript in Vite.
+this stack is awesome!
 
-## Recommended IDE Setup
+# Goals
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer).
+- create an app that presents a custom org agenda from [org](https://orgmode.org/) files.
+- implement actions into agenda view
