@@ -1,4 +1,4 @@
-use std::{path::Path, vec};
+use std::{path::Path, vec, any::Any, borrow::Borrow};
 
 use orgize::Org;
 use serde_json::to_string;
@@ -23,8 +23,8 @@ pub fn get_org_children() -> Vec<String> {
 
 #[derive(Debug, serde::Serialize)]
 pub struct OrgSection {
-    title: String,
-    nodes: Vec<String>
+    pub title: String,
+    pub nodes: Vec<OrgNode>
 }
 
 impl OrgSection {
@@ -39,18 +39,19 @@ impl OrgSection {
 #[derive(Debug, serde::Serialize)]
 pub enum OrgTodoState {
     TODO,
-    DONE
+    DONE,
+    NONE
 }
 
 #[derive(Debug, serde::Serialize)]
 pub struct OrgNode {
     name: String,
     state: OrgTodoState,
-    level: u8
+    level: usize
 }
 
 impl OrgNode {
-    fn new(name: &str, state: OrgTodoState, level: u8) -> Self {
+    fn new(name: &str, state: OrgTodoState, level: usize) -> Self {
         Self {
             name: String::from(name),
             state,
@@ -72,12 +73,27 @@ pub fn get_all_todos() -> Vec<OrgSection> {
 
             for heading in top_level_headings {
                 let mut org_section = OrgSection::new(&heading.title(&org).raw[..]);
-                let sub_headings: Vec<String> = heading.children(&org).map(|node| node.title(&org).raw.to_string()).collect();
-                org_section.nodes = sub_headings;
+                let sub_headings = heading.children(&org);
+                for node in sub_headings {
+                    println!("Debug: {:?}", node.headline_node());
+                    // println!("Debug: {:?}", node.children(&org).map(|child| child.title(&org).raw.to_string()).collect::<String>());
+                    let state = match node.title(&org).keyword.as_deref() {
+                        Some("TODO") => OrgTodoState::TODO,
+                        Some("DONE") => OrgTodoState::DONE,
+                        None => OrgTodoState::NONE,
+                        _ => OrgTodoState::NONE
+                    };
+                    org_section.nodes.push(
+                        OrgNode::new(
+                            &node.title(&org).raw[..],
+                            state,
+                            node.level()
+                        )
+                    );
+                }
                 result.push(org_section);
             }
 
-            println!("Debug: {:?}", result);
             result
         },
         Err(e) => {

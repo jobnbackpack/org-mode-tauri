@@ -2,32 +2,18 @@
   import { invoke } from '@tauri-apps/api/tauri'
   import { onMount } from 'svelte'
 
-  let headlines = []
   let emptyResult = false
   let loading = false
   let orgNodes = []
 
   onMount(async () => {
-    await getHeadlines()
     await getOrgAgenda()
   })
 
   async function getOrgAgenda() {
-    await invoke('get_all_todos', {}).then((res) => {
+    await invoke<any[]>('get_all_todos', {}).then((res) => {
       if (res.length) {
         orgNodes = res
-      } else {
-        emptyResult = true
-      }
-      loading = false
-    })
-  }
-
-  async function getHeadlines() {
-    loading = true
-    await invoke<string[]>('get_org_children', {}).then((res) => {
-      if (res.length) {
-        headlines = res
       } else {
         emptyResult = true
       }
@@ -41,7 +27,10 @@
   {#each orgNodes as section}
     <h2>{section.title}</h2>
     {#each section.nodes as node}
-      <li>{node}</li>
+      <div class="todo-wrapper">
+        <div class="checkbox" class:checked={node.state === 'DONE'} />
+        {node.name}
+      </div>
     {/each}
   {/each}
   {#if emptyResult}
@@ -53,4 +42,20 @@
 </div>
 
 <style>
+  .todo-wrapper {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    gap: 8px;
+  }
+
+  .checkbox {
+    width: 25px;
+    height: 25px;
+    background-color: gray;
+  }
+
+  .checkbox.checked {
+    background-color: green;
+  }
 </style>
