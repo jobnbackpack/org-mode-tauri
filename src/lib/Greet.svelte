@@ -3,7 +3,6 @@
 
   let name = ''
   let greetMsg = ''
-  let parsedJson
   let headlines = []
   let emptyResult = false
   let loading = false
@@ -15,6 +14,7 @@
 
   async function getRawOrgJson() {
     loading = true
+    let parsedJson: any
     await invoke<string>('get_org_file_json', {}).then((res) => {
       if (res) {
         parsedJson = JSON.parse(res)
