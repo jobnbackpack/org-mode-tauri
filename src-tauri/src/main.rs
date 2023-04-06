@@ -7,7 +7,7 @@ mod api;
 use api::org_api;
 
 // TODO: make this configurable
-const ORG_PATH: &str = "C:/Users/Rjanzen/Dropbox/org/agenda.org";
+const ORG_PATH: &str = "/Users/jobnbackpack/Dropbox/org/agenda.org";
 
 
 fn main() {

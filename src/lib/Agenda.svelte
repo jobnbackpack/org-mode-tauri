@@ -5,14 +5,22 @@
   let headlines = []
   let emptyResult = false
   let loading = false
+  let orgNodes = []
 
   onMount(async () => {
     await getHeadlines()
-    test()
+    await getOrgAgenda()
   })
 
-  async function test() {
-    await invoke('get_all_todos', {})
+  async function getOrgAgenda() {
+    await invoke('get_all_todos', {}).then((res) => {
+      if (res.length) {
+        orgNodes = res
+      } else {
+        emptyResult = true
+      }
+      loading = false
+    })
   }
 
   async function getHeadlines() {
@@ -29,10 +37,12 @@
 </script>
 
 <div class="wrapper">
-  <button style="display:block; margin-left: auto;" on:click={getHeadlines}> Refresh </button>
-  {#each headlines as headline}
-    <h2>{headline}</h2>
-    ...
+  <button style="display:block; margin-left: auto;" on:click={getOrgAgenda}> Refresh </button>
+  {#each orgNodes as section}
+    <h2>{section.title}</h2>
+    {#each section.nodes as node}
+      <li>{node}</li>
+    {/each}
   {/each}
   {#if emptyResult}
     <p>The result was empty!</p>
