@@ -1,16 +1,15 @@
 <script lang="ts">
-  import Greet from './lib/Greet.svelte'
+  import Agenda from './lib/Agenda.svelte'
 </script>
 
-<main class="container">
+<main class="main">
   <h1>Welcome to Org Mode Tauri!</h1>
 
-  <div class="row">
-    <Greet />
-  </div>
-
-
+  <Agenda />
 </main>
 
 <style>
+  .main {
+    padding: 32px;
+  }
 </style>
