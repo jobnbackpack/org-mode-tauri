@@ -7,11 +7,13 @@ export interface OrgNode {
   name: string
   level: number
   state: OrgTodoState
+  priority?: OrgTodoPrio
   planning?: OrgPlanning
   nodes?: OrgNode[]
 }
 
 export type OrgTodoState = 'TODO' | 'DONE' | 'NONE'
+export type OrgTodoPrio = 'A' | 'B' | 'C'
 
 export interface OrgFile {
   name: string

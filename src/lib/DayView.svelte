@@ -7,6 +7,7 @@
   export let orgFiles: OrgFile[] = []
   let todos: OrgNode[] = []
   let soon_todos: OrgNode[] = []
+  const current_day = new Date()
 
   onMount(async () => {
     let allTodos = await filterAllTodos()
@@ -41,11 +42,10 @@
   }
 
   function isToday(date: Date): boolean {
-    const today = new Date()
     return (
-      date.getFullYear() === today.getFullYear() &&
-      date.getMonth() === today.getMonth() &&
-      date.getDate() === today.getDate()
+      date.getFullYear() === current_day.getFullYear() &&
+      date.getMonth() === current_day.getMonth() &&
+      date.getDate() === current_day.getDate()
     )
   }
 
@@ -83,6 +83,7 @@
   }
 </script>
 
+<h1>{current_day.toLocaleDateString('DE-de')}</h1>
 {#if todos.length}
   {#each todos as node}
     <Node withIndent={false} {node} />

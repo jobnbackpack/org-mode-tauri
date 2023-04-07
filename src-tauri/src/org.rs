@@ -32,12 +32,14 @@ impl OrgSection<'_> {
                     let node_title = &node.title(&org).clone();
                     let title = node_title.raw.to_string();
                     let planning = &node_title.planning;
+
                     org_section.nodes.push(
                         OrgNode {
                             name: title,
                             state,
                             level: node.level(),
                             planning: planning.clone(),
+                            priority: *&node_title.priority,
                             nodes: None
                            }
                         );
@@ -68,6 +70,7 @@ pub struct OrgNode<'a> {
     name: String,
     state: OrgTodoState,
     level: usize,
+    priority: Option<char>,
     planning: Option<Box<Planning<'a>>>,
     nodes: Option<Vec<OrgNode<'a>>>
 }
@@ -88,6 +91,7 @@ impl OrgNode<'_> {
             let node_title = &node.title(&org).clone();
             let title = node_title.raw.to_string();
             let planning = &node_title.planning;
+            let priority = &node_title.priority;
             let mut sub_nodes: Vec<OrgNode> = Vec::new();
 
             for sub_node in node.children(&org) {
@@ -99,10 +103,8 @@ impl OrgNode<'_> {
                 };
                 let node_title = &sub_node.title(&org).clone();
                 let title = node_title.raw.to_string();
-                if title == "Journaling".to_string() {
-                    println!("Investigate: {:?}", node_title);
-                }
                 let planning = &node_title.planning;
+                let priority = &node_title.priority;
                 let mut sub_sub_nodes: Vec<OrgNode> = Vec::new();
 
                 for sub_sub_node in sub_node.children(&org) {
@@ -115,6 +117,7 @@ impl OrgNode<'_> {
                     let node_title = &sub_sub_node.title(&org).clone();
                     let title = node_title.raw.to_string();
                     let planning = &node_title.planning;
+                    let priority = &node_title.priority;
 
                     sub_sub_nodes.push(
                         OrgNode {
@@ -122,6 +125,7 @@ impl OrgNode<'_> {
                             state,
                             level: sub_sub_node.level(),
                             planning: planning.clone(),
+                            priority: *priority,
                             nodes: None
                         }
                         );
@@ -132,6 +136,7 @@ impl OrgNode<'_> {
                         state,
                         level: sub_node.level(),
                         planning: planning.clone(),
+                        priority: *priority,
                         nodes: Some(sub_sub_nodes)
                     }
                     );
@@ -143,6 +148,7 @@ impl OrgNode<'_> {
                     state,
                     level: node.level(),
                     planning: planning.clone(),
+                    priority: *priority,
                     nodes: Some(sub_nodes)
                 }
                 );

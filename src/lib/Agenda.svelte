@@ -20,7 +20,6 @@
     await invoke<OrgSection[]>('get_all_org_files', {}).then((res) => {
       if (res.length) {
         allOrgFiles = res
-        console.log(allOrgFiles)
       } else {
         emptyResult = true
       }
@@ -30,9 +29,11 @@
 </script>
 
 <div class="wrapper">
-  <button style="display:block;" on:click={() => (currentView = 'AllFiles')}> All </button>
-  <button style="display:block;" on:click={() => (currentView = 'Day')}> Day </button>
-  <button style="display:block; margin-left: auto;" on:click={getAllOrgFiles}> Refresh </button>
+  <nav class="nav">
+    <button on:click={() => (currentView = 'AllFiles')}> All </button>
+    <button on:click={() => (currentView = 'Day')}> Day </button>
+    <button class="refresh" on:click={getAllOrgFiles}> Refresh </button>
+  </nav>
   {#if allOrgFiles.length}
     {#if currentView === 'AllFiles'}
       <AllNodesView orgFiles={allOrgFiles} />
@@ -51,4 +52,12 @@
 </div>
 
 <style>
+  .nav {
+    display: flex;
+    gap: 6px;
+  }
+
+  .refresh {
+    margin-left: auto;
+  }
 </style>
