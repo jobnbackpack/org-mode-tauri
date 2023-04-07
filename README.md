@@ -38,11 +38,11 @@ this file would be shown like this:
 
 ### All Files View
 
-![all files]('public/Screenshot 2.png')
+![all files](https://github.com/jobnbackpack/org-mode-tauri/blob/main/public/Screenshot%202.png?raw=true)
 
 ### Today View
 
-![today]('public/Screenshot 1.png')
+![today](https://github.com/jobnbackpack/org-mode-tauri/blob/main/public/Screenshot%201.png?raw=true)
 
 ## Installing
 
