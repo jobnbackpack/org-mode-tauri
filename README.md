@@ -15,6 +15,35 @@
   - 'Today View' - show all todos scheduled/deadlined for today. Also show todos
     within a deadline range of 14 days
 
+## Example
+
+file: agenda.org
+
+```org
+* My personal todo's
+** DONE [#A] take out the trash
+   SCHEDULED: <2023-04-07 Fri>
+** TODO write a letter
+   DEADLINE: <2023-04-09 Sun>
+* My hobbies
+** TODO [#A] learn rust
+*** TODO [#B] learn Tauri
+*** TODO [#C] learn Yew
+*** TODO [#A] learn Leptos
+** TODO buy a new skateboard
+   DEADLINE: <2023-04-14 Fri>
+```
+
+this file would be shown like this:
+
+### All Files View
+
+![all files]('public/Screenshot 2.png')
+
+### Today View
+
+![today]('public/Screenshot 1.png')
+
 ## Installing
 
 - clone this repo
