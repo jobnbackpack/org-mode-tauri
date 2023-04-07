@@ -3,10 +3,11 @@
   import { mapDate } from './utils'
 
   export let node: OrgNode
+  export let withIndent: boolean = true
 </script>
 
 {#if node.state === 'DONE' || node.state === 'TODO'}
-  <div class={`todo-wrapper level-${node.level}`}>
+  <div class={`todo-wrapper ${withIndent ? 'indent' : ''} level-${node.level}`}>
     <div class="checkbox" class:checked={node.state === 'DONE'} />
     <section>
       {node.name}
@@ -31,7 +32,7 @@
   </div>
   {#if node.nodes && node.nodes.length}
     {#each node.nodes as sub_node}
-      <svelte:self node={sub_node} />
+      <svelte:self node={sub_node} {withIndent} />
     {/each}
   {/if}
 {/if}
@@ -45,13 +46,13 @@
 {/if}
 
 <style>
-  .level-1 {
+  .indent.level-1 {
     margin-inline-start: 0px;
   }
-  .level-2 {
+  .indent.level-2 {
     margin-inline-start: 25px;
   }
-  .level-3 {
+  .indent.level-3 {
     margin-inline-start: 50px;
   }
 </style>

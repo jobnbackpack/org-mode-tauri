@@ -1,16 +1,17 @@
 <script lang="ts">
   import Node from './Node.svelte'
-  import type { OrgNode } from './types'
+  import type { OrgFile } from './types'
 
-  type OrgFiles = OrgNode[][]
-  export let orgFiles: OrgFiles = []
+  export let orgFiles: OrgFile[] = []
 </script>
 
 {#if orgFiles.length}
-  {#each orgFiles as fileNodes}
-    ---
-    {#each fileNodes as node}
-      <Node {node} />
-    {/each}
+  {#each orgFiles as file}
+    {#if file.name !== 'archive.org'}
+      <h1>{file.name}</h1>
+      {#each file.nodes as node}
+        <Node {node} />
+      {/each}
+    {/if}
   {/each}
 {/if}

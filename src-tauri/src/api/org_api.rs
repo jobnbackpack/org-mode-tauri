@@ -3,7 +3,7 @@ use std::{path::Path, vec};
 use orgize::Org;
 use serde_json::to_string;
 
-use crate::{ORG_FILE_PATH, ORG_DIR_PATH, file_reader::{read_file,read_dir}, org::{OrgSection, OrgNode}};
+use crate::{ORG_FILE_PATH, ORG_DIR_PATH, file_reader::{read_file,read_dir}, org::{OrgSection, OrgNode, OrgFile}};
 
 #[tauri::command]
 pub fn get_org_children() -> Vec<String> {
@@ -38,15 +38,20 @@ pub fn get_org_file() -> Vec<OrgSection<'static>> {
 }
 
 #[tauri::command]
-pub fn get_all_org_files() -> Vec<Vec<OrgNode<'static>>> {
+pub fn get_all_org_files() -> Vec<OrgFile> {
     match read_dir(&Path::new(ORG_DIR_PATH)) {
-        Ok(s) => {
-            let mut result: Vec<Vec<OrgNode<'static>>> = Vec::new();
-            for file_string in s {
-                let org = Org::parse_string(file_string);
+        Ok(raw_files) => {
+            let mut result: Vec<OrgFile> = Vec::new();
+            for raw_file in raw_files {
+                let org = Org::parse_string(raw_file.raw);
                 let d = org.document();
 
-                result.push(OrgNode::get_all_nodes_from_doc(d, org));
+                result.push(OrgFile {
+                    name: raw_file.name,
+                    path: raw_file.path,
+                    nodes: OrgNode::get_all_nodes_from_doc(d, org)
+                }
+                );
             }
             result
         },

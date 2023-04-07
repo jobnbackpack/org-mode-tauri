@@ -13,6 +13,12 @@ export interface OrgNode {
 
 export type OrgTodoState = 'TODO' | 'DONE' | 'NONE'
 
+export interface OrgFile {
+  name: string
+  path: string
+  nodes: OrgNode[]
+}
+
 export interface OrgPlanning {
   deadline?: OrgTimestamp
   scheduled?: OrgTimestamp

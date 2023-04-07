@@ -50,6 +50,13 @@ impl OrgSection<'_> {
 }
 
 #[derive(Debug, serde::Serialize)]
+pub struct OrgFile {
+    pub name: String,
+    pub path: String,
+    pub nodes: Vec<OrgNode<'static>>
+}
+
+#[derive(Debug, serde::Serialize)]
 pub enum OrgTodoState {
     TODO,
     DONE,
