@@ -20,6 +20,7 @@
     await invoke<OrgSection[]>('get_all_org_files', {}).then((res) => {
       if (res.length) {
         allOrgFiles = res
+        console.log(allOrgFiles)
       } else {
         emptyResult = true
       }

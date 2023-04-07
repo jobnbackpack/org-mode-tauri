@@ -99,6 +99,9 @@ impl OrgNode<'_> {
                 };
                 let node_title = &sub_node.title(&org).clone();
                 let title = node_title.raw.to_string();
+                if title == "Journaling".to_string() {
+                    println!("Investigate: {:?}", node_title);
+                }
                 let planning = &node_title.planning;
                 let mut sub_sub_nodes: Vec<OrgNode> = Vec::new();
 

@@ -27,7 +27,7 @@
     return (
       date.getFullYear() === today.getFullYear() &&
       date.getMonth() === today.getMonth() &&
-      date.getDay() === today.getDay()
+      date.getDate() === today.getDate()
     )
   }
 

@@ -16,7 +16,11 @@ tauri-build = { version = "1.2", features = [] }
 tauri = { version = "1.2", features = ["shell-open"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-orgize = "0.9.0"
+orgize = "0.8.4"
+
+# need this for getting a 3 year old PR that is still not merged ^^ this makes repeating available
+[patch.crates-io]
+orgize = { git = 'https://github.com/calmofthestorm/orgize.git', branch = "timestamp_parsing"}
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
