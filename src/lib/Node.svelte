@@ -1,9 +1,13 @@
 <script lang="ts">
   import type { OrgNode } from './types'
-  import { mapDate } from './utils'
+  import { getDeadlineRange, mapDate } from './utils'
 
   export let node: OrgNode
   export let withIndent: boolean = true
+
+  function get_dl_days(deadline: Date) {
+    return getDeadlineRange(deadline)
+  }
 </script>
 
 {#if node.state === 'DONE' || node.state === 'TODO'}
@@ -14,7 +18,9 @@
       <div>
         {#if node.planning?.deadline}
           <span class="date">
-            Deadline: {mapDate(node.planning.deadline).toDateString()}
+            Deadline: {mapDate(node.planning.deadline).toDateString()} - in {get_dl_days(
+              mapDate(node.planning.deadline),
+            )} Days
           </span>
         {/if}
         {#if node.planning?.scheduled}

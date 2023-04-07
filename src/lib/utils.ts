@@ -7,3 +7,8 @@ export function mapDate(timestamp: OrgTimestamp) {
   date.setDate(timestamp.start.day)
   return date
 }
+
+export function getDeadlineRange(deadline: Date) {
+  const today = new Date()
+  return Math.floor((deadline.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+}

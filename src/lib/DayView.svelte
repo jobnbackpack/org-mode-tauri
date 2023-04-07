@@ -2,10 +2,11 @@
   import { onMount } from 'svelte'
   import Node from './Node.svelte'
   import type { OrgFile, OrgNode } from './types'
-  import { mapDate } from './utils'
+  import { getDeadlineRange, mapDate } from './utils'
 
   export let orgFiles: OrgFile[] = []
   let todos: OrgNode[] = []
+  let soon_todos: OrgNode[] = []
 
   onMount(async () => {
     let allTodos = await filterAllTodos()
@@ -20,7 +21,24 @@
       }
       return result
     })
+
+    soon_todos = todosWithDate.filter((todo) => {
+      let result = false
+      if (todo.planning.deadline) {
+        result = deadlineInRange(mapDate(todo.planning.deadline))
+      }
+      return result
+    })
+    soon_todos.sort(
+      (todo1, todo2) =>
+        getDeadlineRange(mapDate(todo1.planning.deadline)) - getDeadlineRange(mapDate(todo2.planning.deadline)),
+    )
   })
+
+  function deadlineInRange(deadline: Date): boolean {
+    const range = 14 //days
+    return getDeadlineRange(deadline) < range
+  }
 
   function isToday(date: Date): boolean {
     const today = new Date()
@@ -67,6 +85,10 @@
 
 {#if todos.length}
   {#each todos as node}
+    <Node withIndent={false} {node} />
+  {/each}
+  <h2>soon...</h2>
+  {#each soon_todos as node}
     <Node withIndent={false} {node} />
   {/each}
 {/if}
