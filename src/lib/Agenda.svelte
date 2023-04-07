@@ -1,17 +1,18 @@
 <script lang="ts">
   import { invoke } from '@tauri-apps/api/tauri'
   import { onMount } from 'svelte'
+  import type { OrgSection, OrgTimestamp } from './types'
 
   let emptyResult = false
   let loading = false
   let orgNodes = []
 
   onMount(async () => {
-    await getOrgFile()
+    await getOrgChildren()
   })
 
-  async function getOrgFile() {
-    await invoke<any[]>('get_org_file', {}).then((res) => {
+  async function getOrgChildren() {
+    await invoke<OrgSection[]>('get_org_file', {}).then((res) => {
       if (res.length) {
         orgNodes = res
         console.log(orgNodes)
@@ -22,17 +23,17 @@
     })
   }
 
-  function mapDate(timestamp) {
+  function mapDate(timestamp: OrgTimestamp) {
     let date = new Date()
-    date.setFullYear(timestamp.year)
-    date.setMonth(timestamp.month - 1)
-    date.setDate(timestamp.day)
+    date.setFullYear(timestamp.start.year)
+    date.setMonth(timestamp.start.month - 1)
+    date.setDate(timestamp.start.day)
     return date
   }
 </script>
 
 <div class="wrapper">
-  <button style="display:block; margin-left: auto;" on:click={getOrgFile}> Refresh </button>
+  <button style="display:block; margin-left: auto;" on:click={getOrgChildren}> Refresh </button>
   {#each orgNodes as section}
     <h2>{section.title}</h2>
     {#each section.nodes as node}
@@ -43,17 +44,17 @@
           <div>
             {#if node.planning?.deadline}
               <span class="date">
-                Deadline: {mapDate(node.planning.deadline.start).toDateString()}
+                Deadline: {mapDate(node.planning.deadline).toDateString()}
               </span>
             {/if}
             {#if node.planning?.scheduled}
               <span class="date">
-                Scheduled: {mapDate(node.planning.scheduled.start).toDateString()}
+                Scheduled: {mapDate(node.planning.scheduled).toDateString()}
               </span>
             {/if}
             {#if node.planning?.closed}
               <span class="date">
-                Closed: {mapDate(node.planning.closed.start).toDateString()}
+                Closed: {mapDate(node.planning.closed).toDateString()}
               </span>
             {/if}
           </div>
