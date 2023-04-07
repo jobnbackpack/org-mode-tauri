@@ -3,6 +3,7 @@
 
 mod file_reader;
 mod api;
+mod org;
 
 use api::org_api;
 
