@@ -7,29 +7,57 @@
   let orgNodes = []
 
   onMount(async () => {
-    await getOrgAgenda()
+    await getOrgFile()
   })
 
-  async function getOrgAgenda() {
-    await invoke<any[]>('get_all_todos', {}).then((res) => {
+  async function getOrgFile() {
+    await invoke<any[]>('get_org_file', {}).then((res) => {
       if (res.length) {
         orgNodes = res
+        console.log(orgNodes)
       } else {
         emptyResult = true
       }
       loading = false
     })
   }
+
+  function mapDate(timestamp) {
+    let date = new Date()
+    date.setFullYear(timestamp.year)
+    date.setMonth(timestamp.month - 1)
+    date.setDate(timestamp.day)
+    return date
+  }
 </script>
 
 <div class="wrapper">
-  <button style="display:block; margin-left: auto;" on:click={getOrgAgenda}> Refresh </button>
+  <button style="display:block; margin-left: auto;" on:click={getOrgFile}> Refresh </button>
   {#each orgNodes as section}
     <h2>{section.title}</h2>
     {#each section.nodes as node}
       <div class="todo-wrapper">
         <div class="checkbox" class:checked={node.state === 'DONE'} />
-        {node.name}
+        <section>
+          {node.name}
+          <div>
+            {#if node.planning?.deadline}
+              <span class="date">
+                Deadline: {mapDate(node.planning.deadline.start).toDateString()}
+              </span>
+            {/if}
+            {#if node.planning?.scheduled}
+              <span class="date">
+                Scheduled: {mapDate(node.planning.scheduled.start).toDateString()}
+              </span>
+            {/if}
+            {#if node.planning?.closed}
+              <span class="date">
+                Closed: {mapDate(node.planning.closed.start).toDateString()}
+              </span>
+            {/if}
+          </div>
+        </section>
       </div>
     {/each}
   {/each}
@@ -57,5 +85,9 @@
 
   .checkbox.checked {
     background-color: green;
+  }
+
+  .date {
+    font-style: italic;
   }
 </style>
