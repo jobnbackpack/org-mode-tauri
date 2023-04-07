@@ -110,7 +110,7 @@ impl OrgNode<'_> {
                         OrgNode {
                             name: title,
                             state,
-                            level: node.level(),
+                            level: sub_sub_node.level(),
                             planning: planning.clone(),
                             nodes: None
                         }
@@ -120,7 +120,7 @@ impl OrgNode<'_> {
                     OrgNode {
                         name: title,
                         state,
-                        level: node.level(),
+                        level: sub_node.level(),
                         planning: planning.clone(),
                         nodes: Some(sub_sub_nodes)
                     }
