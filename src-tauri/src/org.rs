@@ -1,4 +1,4 @@
-use orgize::{elements::Planning, Headline, Document, Org};
+use orgize::{elements::Planning, Document, Org};
 
 #[derive(Debug, serde::Serialize)]
 pub struct OrgSection<'a> {
@@ -37,7 +37,8 @@ impl OrgSection<'_> {
                             name: title,
                             state,
                             level: node.level(),
-                            planning: planning.clone() 
+                            planning: planning.clone(),
+                            nodes: None
                            }
                         );
                 }
@@ -45,6 +46,7 @@ impl OrgSection<'_> {
             }
             result
     }
+
 }
 
 #[derive(Debug, serde::Serialize)]
@@ -59,16 +61,82 @@ pub struct OrgNode<'a> {
     name: String,
     state: OrgTodoState,
     level: usize,
-    planning: Option<Box<Planning<'a>>>
+    planning: Option<Box<Planning<'a>>>,
+    nodes: Option<Vec<OrgNode<'a>>>
 }
 
-// impl OrgNode {
-    // pub fn new(name: String, state: OrgTodoState, level: usize, planning: Option<Box<Planning<'static>>>) -> Self {
-    //     Self {
-    //         name,
-    //         state,
-    //         level,
-    //         planning
-    //     }
-    // }
-// }
+impl OrgNode<'_> {
+    pub fn get_all_nodes_from_doc(document: Document, org: Org) -> Vec<OrgNode> {
+        let top_level_nodes = document.children(&org);
+
+        let mut result: Vec<OrgNode> = Vec::new();
+
+        for node in top_level_nodes {
+            let state = match node.title(&org).keyword.as_deref() {
+                Some("TODO") => OrgTodoState::TODO,
+                Some("DONE") => OrgTodoState::DONE,
+                None => OrgTodoState::NONE,
+                _ => OrgTodoState::NONE
+            };
+            let node_title = &node.title(&org).clone();
+            let title = node_title.raw.to_string();
+            let planning = &node_title.planning;
+            let mut sub_nodes: Vec<OrgNode> = Vec::new();
+
+            for sub_node in node.children(&org) {
+                let state = match sub_node.title(&org).keyword.as_deref() {
+                    Some("TODO") => OrgTodoState::TODO,
+                    Some("DONE") => OrgTodoState::DONE,
+                    None => OrgTodoState::NONE,
+                    _ => OrgTodoState::NONE
+                };
+                let node_title = &sub_node.title(&org).clone();
+                let title = node_title.raw.to_string();
+                let planning = &node_title.planning;
+                let mut sub_sub_nodes: Vec<OrgNode> = Vec::new();
+
+                for sub_sub_node in sub_node.children(&org) {
+                    let state = match sub_sub_node.title(&org).keyword.as_deref() {
+                        Some("TODO") => OrgTodoState::TODO,
+                        Some("DONE") => OrgTodoState::DONE,
+                        None => OrgTodoState::NONE,
+                        _ => OrgTodoState::NONE
+                    };
+                    let node_title = &sub_sub_node.title(&org).clone();
+                    let title = node_title.raw.to_string();
+                    let planning = &node_title.planning;
+
+                    sub_sub_nodes.push(
+                        OrgNode {
+                            name: title,
+                            state,
+                            level: node.level(),
+                            planning: planning.clone(),
+                            nodes: None
+                        }
+                        );
+                }
+                sub_nodes.push(
+                    OrgNode {
+                        name: title,
+                        state,
+                        level: node.level(),
+                        planning: planning.clone(),
+                        nodes: Some(sub_sub_nodes)
+                    }
+                    );
+            }
+
+            result.push(
+                OrgNode {
+                    name: title,
+                    state,
+                    level: node.level(),
+                    planning: planning.clone(),
+                    nodes: Some(sub_nodes)
+                }
+                );
+        }
+        result
+    }
+}

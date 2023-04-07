@@ -1,14 +1,18 @@
 <script lang="ts">
   import { invoke } from '@tauri-apps/api/tauri'
   import { onMount } from 'svelte'
-  import type { OrgSection, OrgTimestamp } from './types'
+  import type { OrgSection } from './types'
+  import SingleFile from './SingleFile.svelte'
+  import AllNodesView from './AllNodesView.svelte'
 
   let emptyResult = false
   let loading = false
   let orgNodes = []
+  let allOrgFiles = []
 
   onMount(async () => {
     await getOrgChildren()
+    await getAllOrgChildren()
   })
 
   async function getOrgChildren() {
@@ -23,45 +27,26 @@
     })
   }
 
-  function mapDate(timestamp: OrgTimestamp) {
-    let date = new Date()
-    date.setFullYear(timestamp.start.year)
-    date.setMonth(timestamp.start.month - 1)
-    date.setDate(timestamp.start.day)
-    return date
+  async function getAllOrgChildren() {
+    await invoke<OrgSection[]>('get_all_org_files', {}).then((res) => {
+      if (res.length) {
+        allOrgFiles = res
+        console.log(allOrgFiles)
+      } else {
+        emptyResult = true
+      }
+      loading = false
+    })
   }
 </script>
 
 <div class="wrapper">
   <button style="display:block; margin-left: auto;" on:click={getOrgChildren}> Refresh </button>
-  {#each orgNodes as section}
-    <h2>{section.title}</h2>
-    {#each section.nodes as node}
-      <div class="todo-wrapper">
-        <div class="checkbox" class:checked={node.state === 'DONE'} />
-        <section>
-          {node.name}
-          <div>
-            {#if node.planning?.deadline}
-              <span class="date">
-                Deadline: {mapDate(node.planning.deadline).toDateString()}
-              </span>
-            {/if}
-            {#if node.planning?.scheduled}
-              <span class="date">
-                Scheduled: {mapDate(node.planning.scheduled).toDateString()}
-              </span>
-            {/if}
-            {#if node.planning?.closed}
-              <span class="date">
-                Closed: {mapDate(node.planning.closed).toDateString()}
-              </span>
-            {/if}
-          </div>
-        </section>
-      </div>
-    {/each}
-  {/each}
+  {#if orgNodes.length}
+    <!-- <SingleFile {orgNodes} /> -->
+    <AllNodesView orgFiles={allOrgFiles} />
+  {/if}
+
   {#if emptyResult}
     <p>The result was empty!</p>
   {/if}
@@ -71,24 +56,4 @@
 </div>
 
 <style>
-  .todo-wrapper {
-    display: flex;
-    align-items: center;
-    margin: 8px 0;
-    gap: 8px;
-  }
-
-  .checkbox {
-    width: 25px;
-    height: 25px;
-    background-color: gray;
-  }
-
-  .checkbox.checked {
-    background-color: green;
-  }
-
-  .date {
-    font-style: italic;
-  }
 </style>

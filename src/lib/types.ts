@@ -4,13 +4,14 @@ export interface OrgSection {
 }
 
 export interface OrgNode {
-  level: number
   name: string
-  planning?: OrgPlanning
+  level: number
   state: OrgTodoState
+  planning?: OrgPlanning
+  nodes?: OrgNode[]
 }
 
-export type OrgTodoState = 'TODO' | 'DONE' | null
+export type OrgTodoState = 'TODO' | 'DONE' | 'NONE'
 
 export interface OrgPlanning {
   deadline?: OrgTimestamp

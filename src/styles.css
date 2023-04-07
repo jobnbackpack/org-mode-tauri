@@ -155,3 +155,24 @@ button {
     background-color: #0f0f0f69;
   }
 }
+
+.todo-wrapper {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+  gap: 8px;
+}
+
+.checkbox {
+  width: 25px;
+  height: 25px;
+  background-color: gray;
+}
+
+.checkbox.checked {
+  background-color: green;
+}
+
+.date {
+  font-style: italic;
+}
