@@ -62,3 +62,4 @@ this file would be shown like this:
 - [ ] settings - set folder path and deadline range for day view
 - [ ] manipulate and write org files
   - actions like: date changes, new todos, finish todos,...
+- [ ] keybindings
