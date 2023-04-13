@@ -13,6 +13,7 @@
   let currentView: View = 'AllFiles'
 
   onMount(async () => {
+    await newGetAllOrgFiles()
     await getAllOrgFiles()
   })
 
@@ -20,6 +21,17 @@
     await invoke<OrgSection[]>('get_all_org_files', {}).then((res) => {
       if (res.length) {
         allOrgFiles = res
+      } else {
+        emptyResult = true
+      }
+      loading = false
+    })
+  }
+
+  async function newGetAllOrgFiles() {
+    await invoke<OrgSection[]>('get_all', {}).then((res) => {
+      if (res.length) {
+        console.log(res)
       } else {
         emptyResult = true
       }

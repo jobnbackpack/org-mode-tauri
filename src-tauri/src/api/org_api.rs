@@ -1,4 +1,5 @@
 use std::{path::Path, vec};
+use starsector::*;
 
 use orgize::Org;
 use serde_json::to_string;
@@ -50,6 +51,29 @@ pub fn get_all_org_files() -> Vec<OrgFile> {
                     name: raw_file.name,
                     path: raw_file.path,
                     nodes: OrgNode::get_all_nodes_from_doc(d, org)
+                }
+                );
+            }
+            result
+        },
+        Err(e) => {
+            println!("Error: {:?}", e);
+            vec![]
+        }
+    }
+}
+
+#[tauri::command]
+pub fn get_all() -> Vec<OrgFile>  {
+    match read_dir(&Path::new(ORG_DIR_PATH)) {
+        Ok(raw_files) => {
+            let mut result = Vec::new();
+            for raw_file in raw_files {
+
+                result.push(OrgFile {
+                    name: raw_file.name,
+                    path: raw_file.path,
+                    nodes: OrgNode::get_all_children(String::from(raw_file.raw))
                 }
                 );
             }
