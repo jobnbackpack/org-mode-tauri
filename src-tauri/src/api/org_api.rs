@@ -1,5 +1,4 @@
 use std::{path::Path, vec};
-use starsector::*;
 
 use orgize::Org;
 use serde_json::to_string;
