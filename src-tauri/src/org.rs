@@ -1,4 +1,3 @@
-use orgize::{Document, Org};
 use starsector::*;
 
 #[derive(Debug, serde::Serialize)]
@@ -9,19 +8,19 @@ pub struct OrgFile {
 }
 
 #[derive(Debug, serde::Serialize)]
-pub enum OrgTodoState {
-    TODO,
-    DONE,
-    NONE
+pub struct OrgPlanning<'a> {
+    pub deadline: Option<Timestamp<'a>>,
+    pub scheduled: Option<Timestamp<'a>>,
+    pub closed: Option<Timestamp<'a>>,
 }
 
 #[derive(Debug, serde::Serialize)]
 pub struct OrgNode {
     name: String,
-    state: OrgTodoState,
+    state: String,
     level: usize,
     priority: Option<char>,
-    planning: String, // TODO: needs a better type
+    planning: Option<OrgPlanning<'static>>, 
     nodes: Option<Vec<OrgNode>>
 }
 
@@ -29,42 +28,51 @@ impl OrgNode {
     pub fn get_all_children(raw: String) -> Vec<OrgNode> {
         let mut arena = Arena::default();
         let doc = arena.parse_string(raw);
-        //
-        // println!("Children: {:?}", children);
-        //
-        // let headline = children[1].headline(&arena, None);
-        // let headline = headline.unwrap();
-        //
-        // let sub_children: Vec<_> = children[0].children(&arena).collect();
-        // let sub_headline = sub_children[0].headline(&arena, None).unwrap();
-        //
-        // println!("Headline: {:?}", headline);
-        // println!("Sub Headline: {:?}", sub_headline.planning());
+
         let top_level_children: Vec<Section> = doc.root.children(&arena).collect();
-        println!("Trying to print top level children: {:?}", top_level_children);
 
         let mut result: Vec<OrgNode> = Vec::new();
 
         // INFO: Top Level
         for child in top_level_children {
             let headline = child.headline(&arena, None).unwrap();
-            let state = headline.keyword();
+            let state = match headline.keyword() {
+                Some(state) => state.into(),
+                None => String::from("NONE")
+            };
             let planning = headline.planning();
-            println!("Headline: {:?}", headline);
-            println!("State: {:?}", state);
-            println!("Planning: {:?}", planning);
 
             // INFO: Sub Level
             let sub_level_children: Vec<Section> = child.children(&arena).collect();
+            let mut sub_level_nodes: Vec<OrgNode> = Vec::new();
+
             for sub_child in sub_level_children {
                 let sub_headline = sub_child.headline(&arena, None).unwrap();
-                let sub_state = sub_headline.keyword();
+                let sub_state = match sub_headline.keyword() {
+                    Some(state) => state.into(),
+                    None => String::from("NONE")
+                };
                 let sub_planning = headline.planning();
-                println!("Subheadline Headline: {:?}", sub_headline);
-                println!("Subheadline State: {:?}", sub_state);
-                println!("Subheadline Planning: {:?}", sub_planning);
+
+                sub_level_nodes.push(OrgNode { 
+                    name: sub_headline.title().into(), 
+                    state: sub_state, 
+                    level: sub_headline.level().into(),
+                    priority: sub_headline.priority(),
+                    planning: Some(sub_headline.planning().into_owned()),
+                    nodes: Some(Vec::new()) 
+                });
 
             }
+
+            result.push(OrgNode { 
+                name: headline.title().into(), 
+                state, 
+                level: headline.level().into(),
+                priority: headline.priority(),
+                planning: Some(headline.planning().into_owned()),
+                nodes: Some(sub_level_nodes) 
+            });
             // {
             //     Some("TODO") => OrgTodoState::TODO,
             //     Some("DONE") => OrgTodoState::DONE,
@@ -136,6 +144,7 @@ impl OrgNode {
             //     }
             //     );
         }
+        println!("result: {:?}", result);
         result
     }
 }
